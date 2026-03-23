@@ -1,11 +1,15 @@
 package com.devsuperior.DSCatalog.entities;
 
+import java.time.Instant;
 import java.util.Objects;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,7 +20,13 @@ public class Category {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
-
+	
+	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+	private Instant createdAt; 
+	
+	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+	private Instant updateAt;
+	
 	//@ManyToMany(mappedBy = "categories")
 	//private Set<Product> product = new HashSet<>();
 	
@@ -33,10 +43,26 @@ public class Category {
 
 	public String getName() { return name; }
 	public void setName(String name) { this.name = name; }
+	
+	public Instant getCreatedAt() { return createdAt; }
+	private void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+
+	public Instant getUpdateAt() { return updateAt; }
+	private void setUpdateAt(Instant updateAt) { this.updateAt = updateAt; }
 
 	@Override
 	public int hashCode() { return Objects.hash(id); }
-
+	
+	@PrePersist
+	public void whenPersist() {
+		setCreatedAt(Instant.now());
+	}
+	
+	@PreUpdate
+	public void whenUpdate() {
+		setUpdateAt(Instant.now());
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
